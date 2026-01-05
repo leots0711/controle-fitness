@@ -6,20 +6,46 @@ st.set_page_config(page_title="Controle Fitness", page_icon="🏋️")
 
 ARQUIVO = "dados.csv"
 
-# ===== BASE DE ALIMENTOS =====
+# ===== BASE DE ALIMENTOS (AMPLIADA) =====
 alimentos = {
+    # Proteínas
     "Frango grelhado (100g)": [165, 31, 0, 3],
     "Carne magra (100g)": [180, 26, 0, 8],
+    "Peixe grelhado (100g)": [140, 26, 0, 3],
     "Ovo inteiro (1 un)": [70, 6, 1, 5],
+    "Atum (lata)": [120, 26, 0, 1],
+    "Whey (30g)": [120, 24, 3, 2],
+
+    # Carboidratos
     "Arroz cozido (100g)": [130, 2, 28, 1],
     "Feijão (100g)": [90, 6, 14, 1],
     "Batata doce (100g)": [90, 2, 21, 0],
+    "Macarrão cozido (100g)": [150, 5, 30, 2],
     "Aveia (40g)": [150, 5, 27, 3],
+    "Granola (30g)": [130, 3, 20, 4],
+    "Pão integral (1 fatia)": [70, 3, 12, 1],
+
+    # Frutas
     "Banana (1 un)": [90, 1, 23, 0],
-    "Whey (30g)": [120, 24, 3, 2],
+    "Maçã (1 un)": [80, 0, 21, 0],
+    "Laranja (1 un)": [70, 1, 18, 0],
+    "Mamão (100g)": [45, 0, 11, 0],
+    "Manga (100g)": [60, 0, 15, 0],
+    "Abacaxi (100g)": [50, 0, 13, 0],
+    "Morango (100g)": [32, 1, 8, 0],
+    "Uva (100g)": [70, 0, 18, 0],
+
+    # Açaí
+    "Açaí puro (100g)": [70, 1, 4, 5],
+    "Açaí com xarope (100g)": [110, 1, 21, 4],
+    "Açaí bowl (300g)": [330, 5, 63, 12],
+
+    # Gorduras / extras
     "Azeite (10g)": [90, 0, 0, 10],
-    "Cerveja (long neck)": [150, 1, 13, 0]
-}
+    "Pasta de amendoim (15g)": [90, 4, 3, 8],
+    "Casta
+
+
 
 # ===== METs =====
 exercicios = {
