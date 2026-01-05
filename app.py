@@ -43,9 +43,11 @@ alimentos = {
     # Gorduras / extras
     "Azeite (10g)": [90, 0, 0, 10],
     "Pasta de amendoim (15g)": [90, 4, 3, 8],
-    "Casta
-
-
+    "Castanhas (10 un)": [70, 2, 3, 6],
+    "Queijo coalho (50g)": [150, 8, 1, 12],
+    "Chocolate 70% (20g)": [120, 2, 8, 9],
+    "Cerveja (long neck)": [150, 1, 13, 0]
+}
 
 # ===== METs =====
 exercicios = {
