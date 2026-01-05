@@ -21,9 +21,8 @@ alimentos = {
     "Cerveja (long neck)": [150, 1, 13, 0]
 }
 
-# ===== METs DOS EXERCÍCIOS =====
+# ===== METs =====
 exercicios = {
-    "Nenhum": 0,
     "Musculação": 6.0,
     "Caminhada (esteira)": 4.3,
     "Corrida leve": 9.8,
@@ -32,9 +31,12 @@ exercicios = {
     "HIIT": 10.0
 }
 
-# ===== FUNÇÃO DE CÁLCULO =====
-def calorias_gastas(met, peso, minutos):
+def kcal_gasta(met, peso, minutos):
     return round((met * 3.5 * peso / 200) * minutos, 1)
+
+# ===== SESSION STATE =====
+if "lista_exercicios" not in st.session_state:
+    st.session_state.lista_exercicios = []
 
 # ===== CARREGAR DADOS =====
 try:
@@ -49,62 +51,72 @@ df["Data"] = pd.to_datetime(df["Data"], errors="coerce")
 
 st.title("🏋️ Controle de Dieta, Exercício & Calorias")
 
-st.markdown("""
-**Metas**
-- 🔥 2350 kcal ingeridas
-- 🥩 220 g proteína
-- 🍚 200 g carbo
-- 🫒 70 g gordura
-""")
-
 # ==============================
-# ➕ NOVO REGISTRO
+# ➕ NOVO DIA
 # ==============================
 st.header("➕ Novo dia")
 
 data = st.date_input("Data", date.today())
 peso = st.number_input("Peso do dia (kg)", 80.0, 200.0, step=0.1)
 
-# ----- Alimentação -----
+# ---------- ALIMENTAÇÃO ----------
 st.subheader("🥗 Alimentação")
 kcal = prot = carb = gord = 0
 
 for alimento, v in alimentos.items():
-    qtd = st.number_input(alimento, 0, 10, 0, key=f"novo_{alimento}")
+    qtd = st.number_input(alimento, 0, 10, 0, key=f"food_{alimento}")
     kcal += v[0] * qtd
     prot += v[1] * qtd
     carb += v[2] * qtd
     gord += v[3] * qtd
 
-# ----- Exercício -----
-st.subheader("🏃 Exercício")
-tipo_ex = st.selectbox("Tipo de exercício", exercicios.keys())
-tempo = st.slider("Tempo (min)", 0, 180, 0)
+# ---------- EXERCÍCIOS ----------
+st.subheader("🏃 Exercícios do dia")
 
-kcal_gastas = calorias_gastas(exercicios[tipo_ex], peso, tempo)
-saldo = kcal - kcal_gastas
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    tipo_ex = st.selectbox("Exercício", exercicios.keys())
+with col2:
+    tempo = st.number_input("Tempo (min)", 0, 300, 0)
+with col3:
+    if st.button("➕ Adicionar exercício"):
+        kcal_ex = kcal_gasta(exercicios[tipo_ex], peso, tempo)
+        st.session_state.lista_exercicios.append(
+            {"Exercício": tipo_ex, "Min": tempo, "kcal": kcal_ex}
+        )
+
+# Lista de exercícios adicionados
+total_kcal_gasta = 0
+if st.session_state.lista_exercicios:
+    st.markdown("### 📋 Exercícios registrados")
+    for i, ex in enumerate(st.session_state.lista_exercicios):
+        st.write(f"- {ex['Exercício']} | {ex['Min']} min | {ex['kcal']} kcal")
+        total_kcal_gasta += ex["kcal"]
+
+saldo = kcal - total_kcal_gasta
 
 st.divider()
 
-# ----- Resultados -----
+# ---------- RESULTADOS ----------
 st.subheader("📊 Resultado do dia")
 st.metric("🔥 Calorias ingeridas", kcal)
-st.metric("🔥 Calorias gastas (ajustadas ao peso)", kcal_gastas)
+st.metric("🔥 Calorias gastas", total_kcal_gasta)
 st.metric("⚖️ Saldo calórico", saldo)
 st.metric("🥩 Proteína", prot)
 st.metric("🍚 Carbo", carb)
 st.metric("🫒 Gordura", gord)
 
-# ----- Salvar -----
+# ---------- SALVAR ----------
 if st.button("💾 Salvar dia"):
     if data in df["Data"].dt.date.values:
-        st.error("⚠️ Dia já lançado. Use editar.")
+        st.error("⚠️ Dia já existe. Use editar.")
     else:
         novo = pd.DataFrame([{
             "Data": data,
             "Peso": peso,
             "Calorias_Ingeridas": kcal,
-            "Calorias_Gastas": kcal_gastas,
+            "Calorias_Gastas": total_kcal_gasta,
             "Saldo": saldo,
             "Proteina": prot,
             "Carbo": carb,
@@ -112,7 +124,8 @@ if st.button("💾 Salvar dia"):
         }])
         df = pd.concat([df, novo], ignore_index=True)
         df.to_csv(ARQUIVO, index=False)
-        st.success("✅ Registro salvo!")
+        st.session_state.lista_exercicios = []
+        st.success("✅ Dia salvo com sucesso!")
 
 st.divider()
 
